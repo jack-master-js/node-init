@@ -6,8 +6,8 @@ class DB {
         this.pool = null;
     }
 
-    async createPoll() {
-        const pool = await mysql.createPool({
+    createPoll() {
+        this.pool = mysql.createPool({
             host: 'localhost',
             user: 'root',
             password: '123456',
@@ -20,12 +20,10 @@ class DB {
             enableKeepAlive: true,
             keepAliveInitialDelay: 0
         });
-
-        this.pool = pool;
     }
 
     async getConnection() {
-        if (!this.pool) await this.createPoll();
+        if (!this.pool) this.createPoll();
         const conn = await this.pool.getConnection();
         return conn;
     }
@@ -34,11 +32,11 @@ class DB {
         let conn = await this.getConnection();
         try {
             let [results] = await conn.execute(sql, values);
-            await conn.release();
+            conn.release();
             return results;
         } catch (error) {
             logger.error(`[ db ] ${error.message}`);
-            await conn.release();
+            conn.release();
             throw error;
         }
     }
