@@ -1,20 +1,7 @@
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-*.swp
+.DS_Store
 
+node_modules
 logs
 
-# API keys and secrets
-# .env
-
-# Dependency directory
-node_modules
-
-# OS metadata
-.DS_Store
-Thumbs.db
+#public
+#.env
