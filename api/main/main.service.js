@@ -5,7 +5,6 @@ class MainService {
     /**
      * @api {POST} /api/upload 上传
      * @apiGroup main
-     * @apiParam {string} name 值设置成 file
      */
     upload(req, res, next) {
         try {
