@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const { ERROR_MSG } = require('../../common/lib/enum');
 const jwt = require('jsonwebtoken');
-const db = require('../../db');
+const user = require('./user.query');
 
 class UserService {
     /**
@@ -10,14 +10,10 @@ class UserService {
      */
     async create(req, res, next) {
         try {
-            const user = req.body;
-            if (!user.email || !user.password)
-                throw Error(ERROR_MSG.LACK_PARAMS);
-            user.password = await bcrypt.hash(user.password, 10);
-            await db.execute(
-                'INSERT INTO `user` SET `email` = ?, `password` = ?',
-                [user.email, user.password]
-            );
+            const { email, password } = req.body;
+            if (!email || !password) throw Error(ERROR_MSG.LACK_PARAMS);
+            password = await bcrypt.hash(password, 10);
+            await user.create(email, password);
             res.success();
         } catch (error) {
             next(error);
@@ -33,10 +29,7 @@ class UserService {
         try {
             const { id, email, password } = req.body;
             if (!id) throw Error(ERROR_MSG.LACK_PARAMS);
-            await db.execute(
-                'UPDATE `user` SET `email` = ? , `password` = ?  WHERE `id` = ?',
-                [email, password, id]
-            );
+            await user.update(email, password, id);
             res.success();
         } catch (error) {
             next(error);
@@ -53,15 +46,11 @@ class UserService {
         try {
             const { pageIndex, pageSize } = req.body;
             if (!pageIndex || !pageSize) throw Error(ERROR_MSG.LACK_PARAMS);
-            const records = await db.execute(
-                'SELECT id,email FROM `user` LIMIT ?,?',
-                [pageIndex, pageSize]
+            const { records, total } = await user.findAndCount(
+                pageIndex,
+                pageSize
             );
-
-            const [count] = await db.execute(
-                'SELECT COUNT(*) AS total FROM `user` '
-            );
-            res.data(records, count.total);
+            res.data(records, total);
         } catch (error) {
             next(error);
         }
@@ -74,12 +63,9 @@ class UserService {
      */
     async get(req, res, next) {
         try {
-            const [user] = await db.execute(
-                'SELECT * FROM `user` WHERE `id` = ?',
-                [req.body.id]
-            );
-            if (!user) throw Error(ERROR_MSG.NO_RECORD);
-            res.data(user);
+            const record = await user.get(req.body.id);
+            if (!record) throw Error(ERROR_MSG.NO_RECORD);
+            res.data(record);
         } catch (error) {
             next(error);
         }
@@ -92,9 +78,7 @@ class UserService {
      */
     async del(req, res, next) {
         try {
-            await db.execute('DELETE FROM `user` WHERE `id` = ?', [
-                req.body.id
-            ]);
+            await user.del(req.body.id);
             res.success();
         } catch (error) {
             next(error);
@@ -112,12 +96,9 @@ class UserService {
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            const [user] = await db.execute(
-                'SELECT * FROM `user` WHERE `email` = ?',
-                [email]
-            );
-            if (!user) throw Error(ERROR_MSG.NO_RECORD);
-            const isMatch = await bcrypt.compare(password, user.password);
+            const record = await user.findByEmail(email);
+            if (!record) throw Error(ERROR_MSG.NO_RECORD);
+            const isMatch = await bcrypt.compare(password, record.password);
             if (isMatch) {
                 const token = jwt.sign({ email }, process.env.TOKEN_SECRET, {
                     expiresIn: '24h'

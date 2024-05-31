@@ -1,17 +1,14 @@
 const jwt = require('jsonwebtoken');
-const db = require('../../db');
+const user = require('../../api/user/user.query');
 
 module.exports = async (req, res, next) => {
     const token = req.headers.authorization;
     try {
         const decode = jwt.verify(token, process.env.TOKEN_SECRET);
         const { email } = decode;
-        const records = await db.execute(
-            'SELECT * FROM `user` WHERE `email` = ?',
-            [email]
-        );
+        const record = await user.findByEmail(email);
 
-        if (records) {
+        if (record) {
             next();
         } else {
             throw Error('invalid token');

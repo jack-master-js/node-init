@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-const logger = require('./common/utils/logger');
+const logger = require('./logger');
 
 class DB {
     constructor() {
