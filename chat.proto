@@ -1,0 +1,32 @@
+package chat;
+syntax = "proto3";
+
+message Body {
+    oneof cmd {
+        Ping ping = 1;
+        Pong pong = 2;
+        SystemNotice systemNotice = 3;
+        LoginRes loginRes = 4;
+    }
+}
+
+message Ping {
+    double clientTime = 1;
+}
+
+message Pong {
+    double clientTime = 1;
+    double serverTime = 2;
+}
+
+message SystemNotice {
+    string message = 1;
+}
+
+message ClientInfo {
+    string name = 1;
+}
+
+message LoginRes {
+    ClientInfo clientInfo = 1;
+}

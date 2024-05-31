@@ -1,0 +1,11 @@
+{
+  "name": "API",
+  "description": "API document",
+  "version": "0.1.0",
+  "title": "Node Api Document",
+  "sampleUrl": "http://localhost:3000",
+  "header": {
+    "title": "Introduction",
+    "filename": "header.md"
+  }
+}
