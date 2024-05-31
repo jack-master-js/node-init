@@ -5,7 +5,7 @@ class MainService {
     /**
      * @api {POST} /api/upload 上传
      * @apiGroup main
-     * @apiParam {String} name 值设置成 file
+     * @apiParam {string} name 值设置成 file
      */
     upload(req, res, next) {
         try {
@@ -17,7 +17,6 @@ class MainService {
                     res.filePath();
                 }
             });
-            res.success();
         } catch (error) {
             next(error);
         }

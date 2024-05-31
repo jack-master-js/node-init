@@ -4,8 +4,7 @@ const md5 = require('md5');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         try {
-            if (!req.body.name) throw Error('need name field.');
-            cb(null, `public/uploads/${req.body.name}/`);
+            cb(null, `public/uploads/`);
         } catch (error) {
             cb(error);
         }
