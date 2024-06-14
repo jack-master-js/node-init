@@ -14,8 +14,18 @@ class Util {
         return JSON.parse(JSON.stringify(data));
     }
 
-    random(min, max) {
+    randomNum(min, max) {
         return Math.floor(min + Math.random() * (max + 1 - min));
+    }
+
+    randomStr(len) {
+        len = len || 32;
+        let t = '0123456789abcdefhijkmnprstwxyzABCDEFGHJKMNPQRSTWXYZ',
+            a = t.length,
+            n = '';
+        for (let i = 0; i < len; i++)
+            n += t.charAt(Math.floor(Math.random() * a));
+        return n;
     }
 
     shuffle(arr) {
